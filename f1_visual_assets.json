@@ -1,0 +1,27 @@
+{
+    "_instruction": "此文件用于存储不变的视觉资产链接，请手动填入 F1 官网抓取的图片 URL",
+    "teams": {
+        "red_bull": {
+            "name": "Red Bull Racing",
+            "car_url": "YOUR_IMAGE_URL_HERE",
+            "logo_url": "YOUR_IMAGE_URL_HERE"
+        },
+        "ferrari": {
+            "name": "Scuderia Ferrari",
+            "car_url": "YOUR_IMAGE_URL_HERE",
+            "logo_url": "YOUR_IMAGE_URL_HERE"
+        }
+    },
+    "drivers": {
+        "verstappen": {
+            "name": "Max Verstappen",
+            "headshot_url": "YOUR_IMAGE_URL_HERE",
+            "number": 1
+        },
+        "leclerc": {
+            "name": "Charles Leclerc",
+            "headshot_url": "YOUR_IMAGE_URL_HERE",
+            "number": 16
+        }
+    }
+}

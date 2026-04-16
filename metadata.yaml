@@ -1,5 +1,5 @@
 name: astrbot_plugin_f1
-display_name: F1相关资讯
+display_name: F1 赛事图卡
 desc: 拉取 F1 数据并生成车手榜/车队榜/赛历/单场赛程图片。
 version: 1.0.0
 author: F1yCar

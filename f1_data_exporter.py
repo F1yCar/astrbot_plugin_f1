@@ -1,9 +1,15 @@
 import aiohttp
 import asyncio
-import feedparser
 import json
 import os
 from datetime import datetime
+from urllib.parse import quote
+from urllib.request import Request, urlopen
+
+try:
+    import feedparser
+except Exception:
+    feedparser = None
 
 class F1DataExporter:
     def __init__(self):
@@ -37,18 +43,62 @@ class F1DataExporter:
         data = await self.fetch_json("/current.json")
         self.save_json("f1_race_schedule.json", data)
 
+    def _translate_text_google(self, text: str, target_lang: str = "zh-CN") -> str:
+        """使用 Google 免费翻译接口做轻量翻译（无 key）。"""
+        text = (text or "").strip()
+        if not text:
+            return ""
+        try:
+            # 单次请求控制长度，避免过长导致失败
+            src = text[:1800]
+            url = (
+                "https://translate.googleapis.com/translate_a/single"
+                f"?client=gtx&sl=auto&tl={target_lang}&dt=t&q={quote(src)}"
+            )
+            req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urlopen(req, timeout=8) as resp:
+                payload = resp.read().decode("utf-8", errors="ignore")
+            data = json.loads(payload)
+            translated = "".join(
+                part[0] for part in (data[0] or []) if isinstance(part, list) and part and part[0]
+            ).strip()
+            return translated or text
+        except Exception as e:
+            print(f"⚠️ Google 翻译失败，回退原文: {e}")
+            return text
+
     def export_paddock_news(self):
         """抓取围场新闻并转存为 JSON"""
         print(">>> 抓取围场最新资讯...")
+        if feedparser is None:
+            print("⚠️ feedparser 未安装，跳过围场新闻抓取。")
+            news_data = {
+                "update_time": datetime.now().isoformat(),
+                "source": "Autosport RSS",
+                "articles": [],
+                "warning": "feedparser not installed, paddock news skipped"
+            }
+            self.save_json("f1_paddock_news.json", news_data)
+            return
+
         feed = feedparser.parse(self.rss_url)
+        title_translate_cache = {}
         news_data = {
             "update_time": datetime.now().isoformat(),
             "source": "Autosport RSS",
+            "translator": "google-gtx",
             "articles": []
         }
         for entry in feed.entries[:10]: # 保存前10条
+            title = getattr(entry, 'title', '').strip()
+            if title in title_translate_cache:
+                title_zh = title_translate_cache[title]
+            else:
+                title_zh = self._translate_text_google(title)
+                title_translate_cache[title] = title_zh
             news_data["articles"].append({
-                "title": entry.title,
+                "title": title,
+                "title_zh": title_zh,
                 "published": getattr(entry, 'published', 'N/A'),
                 "link": entry.link,
                 "summary": getattr(entry, 'summary', '')

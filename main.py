@@ -25,7 +25,7 @@ def _ascii_case_variants(text: str) -> set[str]:
     return variants
 
 
-@register("astrbot_plugin_f1", "F1y", "F1 数据更新与信息图渲染插件", "1.0.0")
+@register("astrbot_plugin_f1", "F1yCar", "F1 数据更新与信息图渲染插件", "1.0.0")
 class F1Plugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
@@ -194,6 +194,14 @@ class F1Plugin(Star):
             "斯托尔": "stroll",
             "博塔斯": "bottas",
             "安东内利": "antonelli",
+            "贝尔曼": "bearman",
+            "博托莱托": "bortoleto",
+            "科拉平托": "colapinto",
+            "哈贾尔": "hadjar",
+            "霍肯伯格": "hulkenberg",
+            "劳森": "lawson",
+            "林德布拉德": "lindblad",
+            "佩雷兹": "perez",
         }
         for k, v in driver_zh.items():
             if v in drivers:

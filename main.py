@@ -636,7 +636,7 @@ class F1Plugin(Star):
         for img_path in help_image_candidates:
             if img_path.exists():
                 yield event.image_result(str(img_path))
-                break
+                return
 
         yield event.plain_result(
             "F1 插件命令:\n"
